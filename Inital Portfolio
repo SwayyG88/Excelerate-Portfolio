@@ -1,0 +1,97 @@
+/*Just spoke with Jim from the Subscriber Finance team, and he is doing some analysis on our subscription payments. I provided him with some potential data points he would need in order to get what he is looking for. I need your assistance in providing him with the following:
+Which premium users have a non-mobile plan? */
+
+select user_id,
+subscription_type,
+primary_device
+from userbase
+where subscription_type = 'Premium' and primary_device = 'Smart TV'
+
+/*List of millennial users in our top market that joined in the last year whose monthly subscription is at least $14.99 per month. Sort by the country from A to Z, then by the join date from newest to oldest if you may.*/
+select 
+user_id,
+monthly_revenue,
+join_date,
+age,
+country
+from userbase
+where age between 25 and 34 and country in ('United States','Canada') and
+join_date between '10/01/2022' and '09/30/2023' and monthly_revenue >= 14.99
+
+/* Users whose last payments were made on weekends. This is becoming an issue with our bank due to the processing delay we experience with these payments vs. weekday payments. */
+select user_id,
+last_payment_date,
+dayname(last_payment_date)
+from userbase
+where dayname(last_payment_date) in ('Sat','Sun')
+
+/* All users who have made payments since the onset of the writers strike in May.(
+All users who joined the quarter after the start of the pandemic */
+select user_id,
+join_date,
+monthname(join_date) as Join_Month,
+quarter(join_date) as JoinQuarter,
+year(join_date) as JoinYear
+from userbase
+where year(join_date) = 2020 and quarter(join_date) = 2
+
+
+/* We are meeting with Nielsen next week in regard to ratings regulations. Can you pull the following information prior to our meeting:
+Which shows are appropriate for adults only? Adult only shows are R, TV PG, and TV MA rated. (S)
+Which directors have PG-13 movies that were released in the last 3 years? */
+select Director,
+title,
+Type,
+Rating,
+Release_Year
+from titles
+where type = 'Movie' and rating like '%13%' and release_year between 2020 and 2023
+
+
+/* Just got back from a meeting with the content department. Unfortunately, their data analyst is out on leave, and they are in need of data pulls. May you provide them with the following at your earliest convenience:
+Provide a list of all movies released in Central America within the last 10 years. */
+select Type,
+Title,
+Country,
+release_year
+from titles
+where release_year >=2014  and 
+(country like '%Belize%' or country like '%Costa Rica%' or country like '%El Salvador%' or country like '%Guatemala%' or country like '%Honduras%' or country like '%Nicaragua%' or country like '%Panama%')
+
+/* A list of all titles that were released after 2019. The director is a stickler for reviewing this information in a certain order to make it easier for him to digest. With this being said, please be sure to sort by title from A to Z. (S)
+select title, */
+release_year
+from titles
+where release_year > 2019
+order by 1
+
+/*Titles that were released during the pandemic. Again, refer to what I stated about the content director’s preference.*/
+select title,
+release_year
+from titles
+where release_year = 2020
+order by title asc
+10 non-reality TV shows that had the longest run (S)
+select type,
+title,
+listed_in,
+no_seasons
+from titles
+where listed_in not like '%Reality TV%'
+order by no_seasons desc
+limit 10
+
+/* 25 longest movies outside of our top markets released prior to the pandemic */
+select type,
+title,
+country,
+release_year,
+duration
+from titles
+where release_year < 2020 and (country not like '%United States%' and country not like '%Canada%')
+and type = 'Movie'
+order by duration desc 
+limit 25
+
+
+
